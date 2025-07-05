@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-texn&xy#e+#p*9!f^=qb!&m-p@^gc)e_tp48!d9uz3@nc2@1q8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -76,10 +76,15 @@ WSGI_APPLICATION = 'smart_todo.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres.parzydglvdwiqtosgizp',
+        'PASSWORD': 'Kavita@1supa',
+        'HOST': 'aws-0-ap-south-1.pooler.supabase.com',  # <-- use pooler host here
+        'PORT': '6543',  # <-- pooler port
     }
 }
+
 
 
 # Password validation

@@ -9,7 +9,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class ContextEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = ContextEntry
-        fiels = "__all__"
+        fields = "__all__"
 
 class TaskSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
@@ -19,6 +19,15 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ['id', 'title', 'descriptioon', 'category', 'category_id'
-                  'priority_score', 'deadline', 'status', 'created_at', 'updated_at']
+        fields = ['id', 'title', 'description', 'category', 'category_id', 'priority_score', 'deadline', 'status', 'created_at', 'updated_at']
+
+    def create(self, validated_data):
+        category = validated_data.pop('category', None)  # category is from 'source' of category_id
+        # Now create the Task with category set correctly
+        task = Task.objects.create(**validated_data)
+        if category:
+            task.category = category
+            task.save()
+        return task
+
         
