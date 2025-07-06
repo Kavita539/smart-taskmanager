@@ -28,7 +28,7 @@ const TaskItem = ({ task, handleEdit, categories }) => {
       {categories &&
         categories.length > 0 &&
         categories.map((category) => (
-          <div className="flex-grow">
+          <div className="flex-grow" key={category.id}>
             <h3 className="font-semibold text-lg text-gray-900">
               {task.title}
             </h3>

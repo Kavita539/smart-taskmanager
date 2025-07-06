@@ -27,7 +27,7 @@ const Modal = ({ isOpen, onClose, title, task = {} }) => {
             : task.priority_score === 1
             ? 'medium'
             : 'low',
-        category: task.category || '',
+        category: task.category?.name || '',
       });
     }
   }, [task]);
@@ -69,7 +69,7 @@ const Modal = ({ isOpen, onClose, title, task = {} }) => {
     const payload = {
       title: formData.title,
       description: formData.description,
-      deadline: formData.dueDate,
+      deadline: formData.dueDate || null,
       priority_score,
       category: formData.category,
       status: task.status || 'pending',

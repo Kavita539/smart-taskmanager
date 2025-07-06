@@ -33,25 +33,15 @@ class AISuggestionsAPIView(APIView):
     def post(self, request):
         try:
             task_data = request.data.get('task')
-            context_ids = request.data.get('context_ids', [])
 
-            if not task_data or not context_ids:
+            if not task_data:
                 return Response(
                     {'error': 'Invalid input: "task" and "context_ids" are required.'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-
-            context_entries = ContextEntry.objects.filter(id__in=context_ids)
-            if not context_entries.exists():
-                return Response(
-                    {'error': 'No context entries found for the given IDs.'},
-                    status=status.HTTP_404_NOT_FOUND
-                )
-
-            context_text = process_context_entries(context_entries)
             
             # Defensive: check if suggestion generation fails
-            suggestion = generate_task_suggestions(task_data, context_text)
+            suggestion = generate_task_suggestions(task_data)
             if suggestion is None:
                 return Response(
                     {'error': 'Failed to generate suggestions.'},

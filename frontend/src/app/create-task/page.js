@@ -8,29 +8,69 @@ const TaskForm = ({ initialTask = {}, onCancel }) => {
     description: initialTask.description || "",
     dueDate: initialTask.dueDate || "",
     priority: initialTask.priority || "medium",
-    category: initialTask.category || "",
+    category: initialTask.category?.name || "",
     status: initialTask.status || "pending",
   });
 
   const [aiDescriptionSuggestions, setAiDescriptionSuggestions] = useState([]);
-  const [aiDeadlineRecommendations, setAiDeadlineRecommendations] = useState([]);
+  const [aiDeadlineRecommendations, setAiDeadlineRecommendations] = useState(
+    []
+  );
+
+  const defaultDescriptionSuggestions = [
+    "Break down into smaller sub-tasks.",
+    "Consider necessary resources (people, tools).",
+    "What are the dependencies for this task?",
+  ];
+  const defaultDeadlineRecommendations = [
+    "3 days from now",
+    "End of next week",
+  ];
+
+  const handleSubmitContext = async () => {
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/ai/suggestions/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // Add authorization headers if your API requires them
+        },
+        body: JSON.stringify({
+          task: task,
+          // ...(contextId && { context_id: contextId }),
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Use API data if available, otherwise fallback to defaults
+        setAiDescriptionSuggestions(
+          data.descriptionSuggestions || defaultDescriptionSuggestions
+        );
+        setAiDeadlineRecommendations(
+          data.deadlineRecommendations || defaultDeadlineRecommendations
+        );
+      } else {
+        // If response is not OK, use default data and log the error
+        console.error("API call failed with status:", response.status);
+        setAiDescriptionSuggestions(defaultDescriptionSuggestions);
+        setAiDeadlineRecommendations(defaultDeadlineRecommendations);
+        setError(
+          `Failed to fetch suggestions: Server returned status ${response.status}.`
+        );
+      }
+
+    } catch (err) {
+      console.error("Error submitting context:", err);
+      setError(`Failed to submit context: ${err.message}.`);
+    }
+  };
+  
 
   useEffect(() => {
-    const fetchAiSuggestions = setTimeout(() => {
-      if (task.title.length > 5) {
-        setAiDescriptionSuggestions([
-          "Break down into smaller sub-tasks.",
-          "Consider necessary resources (people, tools).",
-          "What are the dependencies for this task?",
-        ]);
-        setAiDeadlineRecommendations(["3 days from now", "End of next week"]);
-      } else {
-        setAiDescriptionSuggestions([]);
-        setAiDeadlineRecommendations([]);
-      }
-    }, 500);
-
-    return () => clearTimeout(fetchAiSuggestions);
+    if (task.title.length > 0 || task.description.length > 0)
+      handleSubmitContext();
   }, [task.title, task.description]);
 
   const handleChange = (e) => {
@@ -38,40 +78,40 @@ const TaskForm = ({ initialTask = {}, onCancel }) => {
     setTask((prev) => ({ ...prev, [name]: value }));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
-    const response = await fetch("http://localhost:8000/api/tasks/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(task),
-    });
+    try {
+      const response = await fetch("http://localhost:8000/api/tasks/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(task),
+      });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+    } catch (error) {
+      console.error("Submit failed:", error);
     }
-
-    const data = await response.json();
-  } catch (error) {
-    console.error("Submit failed:", error);
-  }
-};
-
+  };
 
   return (
     <form
       onSubmit={handleSubmit}
       className="p-6 bg-white rounded-lg shadow-lg max-w-2xl mx-auto my-8"
     >
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">
-        Create New Task
-      </h2>
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Create New Task</h2>
 
       <div className="mb-4">
-        <label htmlFor="title" className="block text-gray-700 text-sm font-bold mb-2">
+        <label
+          htmlFor="title"
+          className="block text-gray-700 text-sm font-bold mb-2"
+        >
           Task Title
         </label>
         <input
@@ -86,7 +126,10 @@ const handleSubmit = async (e) => {
       </div>
 
       <div className="mb-4">
-        <label htmlFor="description" className="block text-gray-700 text-sm font-bold mb-2">
+        <label
+          htmlFor="description"
+          className="block text-gray-700 text-sm font-bold mb-2"
+        >
           Description
         </label>
         <textarea
@@ -110,7 +153,10 @@ const handleSubmit = async (e) => {
       </div>
 
       <div className="mb-4">
-        <label htmlFor="dueDate" className="block text-gray-700 text-sm font-bold mb-2">
+        <label
+          htmlFor="dueDate"
+          className="block text-gray-700 text-sm font-bold mb-2"
+        >
           Due Date
         </label>
         <input
@@ -130,7 +176,10 @@ const handleSubmit = async (e) => {
       </div>
 
       <div className="mb-4">
-        <label htmlFor="priority" className="block text-gray-700 text-sm font-bold mb-2">
+        <label
+          htmlFor="priority"
+          className="block text-gray-700 text-sm font-bold mb-2"
+        >
           Priority
         </label>
         <select
@@ -147,7 +196,10 @@ const handleSubmit = async (e) => {
       </div>
 
       <div className="mb-6">
-        <label htmlFor="category" className="block text-gray-700 text-sm font-bold mb-2">
+        <label
+          htmlFor="category"
+          className="block text-gray-700 text-sm font-bold mb-2"
+        >
           Category
         </label>
         <input
