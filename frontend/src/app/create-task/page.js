@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-const TaskForm = ({ initialTask = {}, onCancel }) => {
+const TaskForm = ({ initialTask = {} }) => {
   const [task, setTask] = useState({
     title: initialTask.title || "",
     description: initialTask.description || "",
@@ -17,6 +17,17 @@ const TaskForm = ({ initialTask = {}, onCancel }) => {
     []
   );
 
+  const handleclear = () => {
+    setTask({
+      title: "",
+      description: "",
+      dueDate: "",
+      priority: "medium",
+      category: "",
+      status: "pending",
+    });
+  };
+
   const defaultDescriptionSuggestions = [
     "Break down into smaller sub-tasks.",
     "Consider necessary resources (people, tools).",
@@ -28,19 +39,21 @@ const TaskForm = ({ initialTask = {}, onCancel }) => {
   ];
 
   const handleSubmitContext = async () => {
-
     try {
-      const response = await fetch(`http://localhost:8000/api/ai/suggestions/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // Add authorization headers if your API requires them
-        },
-        body: JSON.stringify({
-          task: task,
-          // ...(contextId && { context_id: contextId }),
-        }),
-      });
+      const response = await fetch(
+        `http://localhost:8000/api/ai/suggestions/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // Add authorization headers if your API requires them
+          },
+          body: JSON.stringify({
+            task: task,
+            // ...(contextId && { context_id: contextId }),
+          }),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -60,13 +73,11 @@ const TaskForm = ({ initialTask = {}, onCancel }) => {
           `Failed to fetch suggestions: Server returned status ${response.status}.`
         );
       }
-
     } catch (err) {
       console.error("Error submitting context:", err);
       setError(`Failed to submit context: ${err.message}.`);
     }
   };
-  
 
   useEffect(() => {
     if (task.title.length > 0 || task.description.length > 0)
@@ -221,7 +232,7 @@ const TaskForm = ({ initialTask = {}, onCancel }) => {
         </button>
         <button
           type="button"
-          onClick={onCancel}
+          onClick={handleclear}
           className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
         >
           Cancel
