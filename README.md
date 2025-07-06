@@ -2,7 +2,7 @@ Smart Todo List Application
 Intelligent Task Management Powered by AI
 This project aims to revolutionize task management by integrating advanced AI capabilities into a standard Todo List application. Users can efficiently organize their tasks, receive smart suggestions for prioritization and deadlines, and leverage daily context (messages, emails, notes) to get context-aware recommendations, making task management more intuitive and productive.
 
-Features
+## Features
 Task Creation & Management: Standard CRUD operations for tasks (create, read, update, delete).
 
 Task Prioritization (AI-Powered): AI analyzes task details and context to suggest optimal priority levels.
@@ -23,7 +23,7 @@ Status Tracking: Track task progress with various statuses (e.g., pending, in pr
 
 Responsive User Interface: A clean, modern, and responsive design built with ReactJS and Tailwind CSS.
 
-Tech Stack
+## Tech Stack
 This application is built using a robust and modern tech stack:
 
 Backend:
@@ -38,19 +38,13 @@ Supabase (PostgreSQL): A scalable and reliable PostgreSQL database solution, off
 
 Frontend:
 
-ReactJS: A declarative, component-based JavaScript library for building user interfaces.
+NextJS: A declarative, component-based JavaScript library for building user interfaces.
 
 Tailwind CSS: A utility-first CSS framework for rapidly building custom designs.
 
 AI Integration:
 
 OpenAI API: For general-purpose AI tasks (e.g., text generation, understanding).
-
-Claude API: Another powerful language model for diverse AI functionalities.
-
-Gemini API: Google's advanced multimodal AI model.
-
-LM Studio (Recommended): For running local large language models, offering flexibility and privacy for development.
 
 Storage:
 
