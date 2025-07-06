@@ -6,13 +6,20 @@ from django.core.exceptions import ObjectDoesNotExist
 from .models import Task, ContextEntry, Category
 from .serializers import TaskSerializer, ContextEntrySerializer, CategorySerializer
 from .ai_module import generate_task_suggestions, process_context_entries
+from .filters import TaskFilter
+from django_filters.rest_framework import DjangoFilterBackend
 import logging
 
 logger = logging.getLogger(__name__)
 
+from .filters import TaskFilter  # import your filter class
+
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all().order_by('-created_at')
     serializer_class = TaskSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TaskFilter
+
 
 class ContextEntryViewSet(viewsets.ModelViewSet):
     queryset = ContextEntry.objects.all().order_by('-timestamp')
